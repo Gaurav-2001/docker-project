@@ -1,0 +1,41 @@
+version: '3'
+services:
+        sqlos:
+                image: mysql:5.7
+                volumes:
+                        - sql_storage:/var/lib/mysql
+                restart: always
+                environment:
+                        MYSQL_ROOT_PASSWORD: redhat
+                        MYSQL_USER: gaurav
+                        MYSQL_PASSWORD: redhat
+                        MYSQL_DATABASE: drupal_db                   
+        phpos:
+                image: phpmyadmin/phpmyadmin
+                restart: always
+                depends_on:
+                        - sqlos
+                ports:
+                        - 1234:80
+                environment:
+                        PMA_HOST: sqlos
+                        MYSQL_ROOT_PASSWORD: redhat
+                        MYSQL_USER: gaurav
+                        MYSQL_PASSWORD: redhat 
+        drupalos:
+                image: drupal:latest
+                restart: always
+                depends_on:
+                        - sqlos
+                ports:
+                        - 8080:80
+                volumes:
+                        - drupal_storage:/var/www/html
+                environment:
+                        POSTGRES_DB: drupal_db
+                        POSTGRES_USER: gaurav
+                        POSTGRES_HOST: sqlos 
+                        POSTGRES_PASSWORD: redhat
+volumes:        
+        sql_storage:                
+        drupal_storage:
